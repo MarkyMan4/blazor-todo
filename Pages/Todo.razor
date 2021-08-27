@@ -1,0 +1,78 @@
+﻿@using TodoList.Models
+
+@page "/"
+
+<h1>Todo</h1>
+<hr />
+<h3>You have @todos.Count(t => !t.IsDone) tasks to complete!</h3>
+
+<div class="mb-4">
+    <input placeholder="Something todo" @bind="newTodo" />
+    <button class="btn btn-success" @onclick="AddTodo">Add todo</button>
+</div>
+
+<button @onclick="ToggleDisplay" class="btn btn-primary mb-4">@GetButtonText()</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Task</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (showActive)
+        {
+            @foreach (var todo in todos)
+            {
+                <tr>
+                    <td>@todo.Title</td>
+                    <td><button @onclick="@(e => MarkTodoComplete(todo))" class="btn btn-primary">Done</button></td>
+                </tr>
+            }
+        }
+        else
+        {
+            @foreach (var completedTodo in completedTodos)
+            {
+                <tr>
+                    <td>@completedTodo.Title</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<TodoItem> todos = new();
+    private List<TodoItem> completedTodos = new();
+    private string newTodo;
+    private bool showActive = true;
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            todos.Add(new TodoItem { Title = newTodo });
+            newTodo = "";
+        }
+    }
+
+    private void MarkTodoComplete(TodoItem todo)
+    {
+        completedTodos.Add(todo);
+        todos.Remove(todo);
+    }
+
+    private string GetButtonText()
+    {
+        if (showActive)
+            return "Show Completed";
+        else
+            return "Show Active";
+    }
+
+    private void ToggleDisplay()
+    {
+        showActive = !showActive;
+    }
+}
